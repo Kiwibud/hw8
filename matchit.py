@@ -81,8 +81,7 @@ def get_arguments():
     parser.add_argument('color', help='What color would you like for the '
                                       'player?',
                         choices=['blue', 'green', 'magenta'])
-    parser.add_argument('image_folder', help='What folder contains the game '
-                                             'images?',
+    parser.add_argument('image_folder', help='Folder contains images',
                         type=file_type)
     parser.add_argument('-f', '--fast', help='Fast or slow game',
                         action='store_true')
@@ -99,26 +98,30 @@ def file_type(folder):
     :param folder:
     :return:
     """
+    image_list = []
     # check if the folder is in the directory
-    try:
-        # assume just checking in current directory
-        if folder in os.listdir():
-            image_list = []
-            # check if folder contains at least 8 gif files
-            for each_file in os.listdir(folder):
-                filename, ext = os.path.splitext(each_file)
-                if ext == '.gif':
-                    image_list.append(each_file)
-            if len(image_list) < 8:
-                raise argparse.ArgumentError()
-    except FileExistsError:
+    if folder not in os.listdir():
         raise argparse.ArgumentError()
+        # print(f' Error: {folder} is not a valid folder')
+    else:
+        # check if it contains at least 8 gif files
+        for each_file in os.listdir(folder):
+            filename, ext = os.path.splitext(each_file)
+            if ext == '.gif':
+                image_list.append(each_file)
+        print(image_list)
+        if len(image_list) < 8:
+            # print(f'Error:{folder} must contain at least 8 gif files')
+            raise argparse.ArgumentError()
     return folder
 
 
 def main():
     # Retrieve and validate the command line arguments using argparse
+    delay_time = 1
     color, image_folder, fast = get_arguments()
+    if fast:
+        delay_time = 3
     # Instantiate a root window
     # Instantiate a MatchGame object with the correct arguments
     # Enter the main event loop
