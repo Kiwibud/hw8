@@ -2,7 +2,7 @@
 # Name:        matchit
 # Purpose:     Implement a single player matching game
 #
-# Author(s):
+# Author: Kiwibud
 # ----------------------------------------------------------------------
 """
 A single player matching game.
@@ -20,6 +20,7 @@ import tkinter
 import os
 import random
 import argparse
+import sys
 
 
 class MatchGame(object):
@@ -71,10 +72,49 @@ class MatchGame(object):
 
 # Enter any function definitions here to get and validate the
 # command line arguments.  Include docstrings.
+def get_arguments():
+    """
+    Parse and validate the command line arguments
+    :return:
+    """
+    parser = argparse.ArgumentParser()
+    parser.add_argument('color', help='What color would you like for the '
+                                      'player?',
+                        choices=['blue', 'green', 'magenta'])
+    parser.add_argument('image_folder', help='Folder contains images',
+                        type=file_type)
+    arguments = parser.parse_args()
+    color = arguments.color
+    image_folder = arguments.image_folder
+    return color, image_folder
+
+
+def file_type(folder):
+    """
+    Validate if the folder exists and contains at least 8 gif files
+    :param folder:
+    :return:
+    """
+    # check if the folder is in the directory
+    try:
+        # assume just checking in current directory
+        if folder in os.listdir():
+            image_list = []
+            # check if it contains at least 8 gif files
+            for each_file in os.listdir(folder):
+                filename, ext = os.path.splitext(each_file)
+                if ext == '.gif':
+                    image_list.append(each_file)
+            if len(image_list) < 8:
+                raise argparse.ArgumentError()
+    except FileExistsError:
+        raise argparse.ArgumentError()
+    return folder
+
 
 def main():
     # Retrieve and validate the command line arguments using argparse
-    
+    color, image_folder = get_arguments()
     # Instantiate a root window
     # Instantiate a MatchGame object with the correct arguments
     # Enter the main event loop
@@ -83,4 +123,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
