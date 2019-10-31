@@ -85,12 +85,8 @@ class MatchGame(object):
             for x_iter in range(self.NUM_GRIDS):
                 tile = tkinter.Canvas(parent, width=self.SQUARE_SIZE,
                                       height=self.SQUARE_SIZE)
-                x, y = 0, 0
-                x_stop, y_stop = x+ self.SQUARE_SIZE, y + self.SQUARE_SIZE
-                print(f'to check coordinate x, y, x_stop, y_stop: '
-                      f'{x} {y} {x_stop} {y_stop}')
-                tile.create_rectangle(x, y, x_stop, y_stop, outline='black',
-                                      fill='yellow')
+                tile.create_rectangle(0, 0, self.SQUARE_SIZE, self.SQUARE_SIZE,
+                                      outline='black', fill='yellow')
                 tile.grid(column=x_iter, row=y_iter)
 
     # Enter your additional method definitions below
