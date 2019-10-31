@@ -38,14 +38,26 @@ class MatchGame(object):
     """
 
     # Add your class variables if needed here - square size, etc...)
+    SQUARE_SIZE = 150
+    NUM_GRIDS = 4
+    CANVAS_SIZE = SQUARE_SIZE * NUM_GRIDS + 100
 
     def __init__(self, parent, player_color, folder, delay):
         parent.title('Match it!')
         # Create the restart button widget
+        restart = tkinter.Button(parent, text='RESTART', width=20,
+                                 command=self.restart)
+        restart.grid()
         # Create a canvas widget
+        self.canvas = tkinter.Canvas(parent, width=self.CANVAS_SIZE,
+                                     height=self.CANVAS_SIZE)
+        self.canvas.grid()
+        # create the grid frame on canvas
+        self.create_grids(self.canvas)
         # Create a label widget for the score and end of game messages
+        game_label = tkinter.Label(parent, text='Score', borderwidth=1)
+        game_label.grid()
         # Create any additional instance variable you need for the game
-        pass  # take out the pass statement and enter your code
 
     def restart(self):
         """
@@ -64,6 +76,22 @@ class MatchGame(object):
         :return: None
         """
         pass  # take out the pass statement and enter your code
+
+    def display_score(self):
+        pass  # take out the pass statement and enter your code
+
+    def create_grids(self, parent):
+        for y_iter in range(self.NUM_GRIDS):
+            for x_iter in range(self.NUM_GRIDS):
+                tile = tkinter.Canvas(parent, width=self.SQUARE_SIZE,
+                                      height=self.SQUARE_SIZE)
+                x, y = 0, 0
+                x_stop, y_stop = x+ self.SQUARE_SIZE, y + self.SQUARE_SIZE
+                print(f'to check coordinate x, y, x_stop, y_stop: '
+                      f'{x} {y} {x_stop} {y_stop}')
+                tile.create_rectangle(x, y, x_stop, y_stop, outline='black',
+                                      fill='yellow')
+                tile.grid(column=x_iter, row=y_iter)
 
     # Enter your additional method definitions below
     # Make sure they are indented inside the MatchGame class
@@ -123,11 +151,13 @@ def main():
     if fast:
         delay_time = 3
     # Instantiate a root window
+    root = tkinter.Tk()
     # Instantiate a MatchGame object with the correct arguments
+    match_game = MatchGame(root, color, image_folder, delay_time)
     # Enter the main event loop
+    root.mainloop()
     pass  # take out the pass statement and enter your code
 
 
 if __name__ == '__main__':
     main()
-
