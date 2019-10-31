@@ -81,12 +81,16 @@ def get_arguments():
     parser.add_argument('color', help='What color would you like for the '
                                       'player?',
                         choices=['blue', 'green', 'magenta'])
-    parser.add_argument('image_folder', help='Folder contains images',
+    parser.add_argument('image_folder', help='What folder contains the game '
+                                             'images?',
                         type=file_type)
+    parser.add_argument('-f', '--fast', help='Fast or slow game',
+                        action='store_true')
     arguments = parser.parse_args()
     color = arguments.color
     image_folder = arguments.image_folder
-    return color, image_folder
+    fast = arguments.fast
+    return color, image_folder, fast
 
 
 def file_type(folder):
@@ -100,7 +104,7 @@ def file_type(folder):
         # assume just checking in current directory
         if folder in os.listdir():
             image_list = []
-            # check if it contains at least 8 gif files
+            # check if folder contains at least 8 gif files
             for each_file in os.listdir(folder):
                 filename, ext = os.path.splitext(each_file)
                 if ext == '.gif':
@@ -114,7 +118,7 @@ def file_type(folder):
 
 def main():
     # Retrieve and validate the command line arguments using argparse
-    color, image_folder = get_arguments()
+    color, image_folder, fast = get_arguments()
     # Instantiate a root window
     # Instantiate a MatchGame object with the correct arguments
     # Enter the main event loop
@@ -123,3 +127,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
