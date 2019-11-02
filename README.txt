@@ -5,4 +5,4 @@ Progress:
 
 NEED FIX:
 -click outside => get the closest tile, may need to change the method find_closest => sth else
--click many time => out of bound: need another array
+-click many times => out of bound: need another array to keep track of this 
