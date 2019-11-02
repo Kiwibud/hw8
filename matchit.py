@@ -179,13 +179,12 @@ def file_type(folder):
     """
     # check if the folder is in the directory
     if folder not in os.listdir():
-        raise argparse.ArgumentError()
-        # print(f' Error: {folder} is not a valid folder')
+        raise argparse.ArgumentTypeError(f'{folder} is not a valid folder')
     else:
         # check if it contains at least 8 gif files
         if len(get_image_list(folder)) < 8:
-            # print(f'Error:{folder} must contain at least 8 gif files')
-            raise argparse.ArgumentError()
+            raise argparse.ArgumentTypeError(f'{folder} must contain at '
+                                             f'least 8 gif images')
     return folder
 
 
