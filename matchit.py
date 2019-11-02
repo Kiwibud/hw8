@@ -23,6 +23,7 @@ import argparse
 import sys
 
 
+
 class MatchGame(object):
     """
     GUI Game class for a matching game.
@@ -41,23 +42,31 @@ class MatchGame(object):
     SQUARE_SIZE = 150
     NUM_GRIDS = 4
     CANVAS_SIZE = SQUARE_SIZE * NUM_GRIDS + 100
+    score = 100
+    count = 0
 
     def __init__(self, parent, player_color, folder, delay):
         parent.title('Match it!')
         # Create the restart button widget
-        restart = tkinter.Button(parent, text='RESTART', width=20,
+        restart_btn = tkinter.Button(parent, text='RESTART', width=20,
                                  command=self.restart)
-        restart.grid()
+        restart_btn.grid()
         # Create a canvas widget
         self.canvas = tkinter.Canvas(parent, width=self.CANVAS_SIZE,
                                      height=self.CANVAS_SIZE)
+        for i in self.canvas.find_all():
+            self.pic = tkinter.PhotoImage(file=get_image_list(folder)[0])
+            self.image_id = self.canvas.create_image(50, 50, image=self.pic)
         self.canvas.grid()
         # create the grid frame on canvas
         self.create_grids(self.canvas)
         # Create a label widget for the score and end of game messages
-        game_label = tkinter.Label(parent, text='Score', borderwidth=1)
-        game_label.grid()
+        self.score_label = tkinter.Label(parent, text=f'Score: {self.score}',
+                                   borderwidth=1)
+        self.score_label.grid()
         # Create any additional instance variable you need for the game
+
+
 
     def restart(self):
         """
@@ -66,7 +75,10 @@ class MatchGame(object):
         score.
         :return: None
         """
-        pass  # take out the pass statement and enter your code
+        self.score = 100
+        self.count = 0
+        # random.shuffle(get_image_list(folder))
+
 
     def play(self, event):
         """
@@ -75,9 +87,6 @@ class MatchGame(object):
         :param event: event (Event object) describing the click event
         :return: None
         """
-        pass  # take out the pass statement and enter your code
-
-    def display_score(self):
         pass  # take out the pass statement and enter your code
 
     def create_grids(self, parent):
@@ -122,22 +131,25 @@ def file_type(folder):
     :param folder:
     :return:
     """
-    image_list = []
     # check if the folder is in the directory
     if folder not in os.listdir():
         raise argparse.ArgumentError()
         # print(f' Error: {folder} is not a valid folder')
     else:
         # check if it contains at least 8 gif files
-        for each_file in os.listdir(folder):
-            filename, ext = os.path.splitext(each_file)
-            if ext == '.gif':
-                image_list.append(each_file)
-        print(image_list)
-        if len(image_list) < 8:
+        if len(get_image_list(folder)) < 8:
             # print(f'Error:{folder} must contain at least 8 gif files')
             raise argparse.ArgumentError()
     return folder
+
+
+def get_image_list(folder):
+    image_list = []
+    for each_file in os.listdir(folder):
+        filename, ext = os.path.splitext(each_file)
+        if ext == '.gif':
+            image_list.append(each_file)
+    return image_list
 
 
 def main():
@@ -152,7 +164,6 @@ def main():
     match_game = MatchGame(root, color, image_folder, delay_time)
     # Enter the main event loop
     root.mainloop()
-    pass  # take out the pass statement and enter your code
 
 
 if __name__ == '__main__':
