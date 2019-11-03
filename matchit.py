@@ -133,18 +133,21 @@ class MatchGame(object):
         self.canvas.delete(self.image_id)
         self.canvas.itemconfigure(tile, fill=self.default_color)
 
-    def select(self, tile):
+    def select(self, event):
         """
         Tag the clicked tile as selected/unselected
         :param tile:
         :return: None
         """
-        if "selected" in self.canvas.gettags(tile):
-            # print("unselected")
-            self.canvas.itemconfigure(tile, tag="unselected")
-        else:
-            # print("selected")
-            self.canvas.itemconfigure(tile, tag="selected")
+        
+        tile = self.canvas.find_withtag(tkinter.CURRENT)
+        self.canvas.itemconfigure(tile, tag="selected")
+#         if "selected" in self.canvas.gettags(tile):
+#             # print("unselected")
+#             self.canvas.itemconfigure(tile, tag="unselected")
+#         else:
+#             # print("selected")
+#             self.canvas.itemconfigure(tile, tag="selected")
 
 
 def get_arguments():
