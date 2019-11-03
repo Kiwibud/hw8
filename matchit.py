@@ -90,6 +90,8 @@ class MatchGame(object):
         """
         self.score = 100
         self.num_of_tries = 0
+        for tile in self.canvas.find_all():
+            self.canvas.itemconfigure(tile, fill=self.default_color)
         # random.shuffle(get_image_list(folder))
 
     def play(self, event):
