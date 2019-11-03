@@ -131,7 +131,7 @@ class MatchGame(object):
         :return: None
         """
         self.canvas.delete(self.image_id)
-        self.canvas.itemconfigure(tile, fill=self.default_color)
+        self.canvas.itemconfigure(tile, fill=self.color)
 
     def select(self, event):
         """
