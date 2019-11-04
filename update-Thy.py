@@ -31,7 +31,7 @@ class Tile:
         self.flipped = False
         self.color = color
         self.cords = cords
-        self.visual = self.parent.create_rectangle(cords, outline=self.color,
+        self.visual = self.parent.create_rectangle(cords, outline=self.color, 
                                                    fill=self.default_color)
 
     def set_color(self, color):
