@@ -28,6 +28,8 @@ class Tile:
         self.parent = parent
         self.tile_id = tile_id
         self.image_file = image_dir
+        path, image_name = os.path.split()
+        self.image_name = image_name
         self.flipped = False
         self.color = color
         self.cords = cords
