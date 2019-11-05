@@ -39,10 +39,10 @@ class MatchGame(object):
     # Add your class variables if needed here - square size, etc...)
     SQUARE_SIZE = 150
     NUM_GRIDS = 4
-    CANVAS_SIZE = SQUARE_SIZE * NUM_GRIDS + 100
+    CANVAS_SIZE = SQUARE_SIZE * NUM_GRIDS
     score = 100
     num_of_tries = 0
-    pic = []
+    # pic = []
     default_color = 'yellow'
 
     def __init__(self, parent, player_color, folder, delay):
@@ -53,7 +53,7 @@ class MatchGame(object):
         self.folder = folder
         self.image_id = []
         self.tiles = []  # array of all the Tile objects
-        self.click_tiles = [] # array of all the clicked tile_id
+        self.click_tiles = []  # array of all the clicked tile_id
         # Initiate list of images
         self.new_list = get_image_list(folder) * 2
         random.shuffle(self.new_list)
@@ -71,12 +71,6 @@ class MatchGame(object):
         # create the grid on canvas
         self.create_grid()
         self.canvas.grid()
-        # self.pic = tkinter.PhotoImage(
-        #     file=os.path.join(folder, self.new_list[x_iter]))
-        # img_id = self.canvas.create_image(self.SQUARE_SIZE / 2,
-        #                                   self.SQUARE_SIZE / 2,
-        #                                   image=self.pic)
-        # self.image_id.append(img_id)
         self.canvas.bind("<Button-1>", self.play)
         # Create a label widget for the score and end of game messages
         self.score_label = tkinter.Label(parent, text=f'Score: {self.score}',
@@ -104,44 +98,54 @@ class MatchGame(object):
         :param event: event (Event object) describing the click event
         :return: None
         """
-        while len(self.click_tiles) < 2:
+        if len(self.click_tiles) < 2:
             self.click(event)
         if len(self.click_tiles) == 2:
-            for tile in self.click_tiles:
-                self.canvas.after(self.delay, self.disappear, tile)
-        return "break"
+            # check if match:
+            tile1 = self.tiles[self.click_tiles[0]]
+            tile2 = self.tiles[self.click_tiles[1]]
+            is_match = tile1.is_match(tile2)
+            self.canvas.after(self.delay, self.disappear, is_match)
 
     def click(self, event):
-        tile = self.canvas.find_closest(event.x, event.y)
-        self.appear(tile)
-        self.num_clicks += 1
-        self.click_tiles.append(tile)
+        # tile object, eg (1,)
+        tile = self.canvas.find_withtag(tkinter.CURRENT)
 
-    def appear(self, tile):
         tile_id = tile[0] - 1
-        cords = self.canvas.coords(tile)  # coordinates of tile
-        print(os.path.join(self.folder, self.new_list[tile_id]))
-        self.pic = self.tiles[tile_id].picture  # get the pic associate with tile
-        print(cords)
-        image_id = self.canvas.create_image((cords[0] + cords[2]) / 2,
-                                                 (cords[1] + cords[3]) / 2,
-                                                 image=self.pic)
-        self.image_id.append(image_id)
-        return tile
+        # if the tiles is not disable
+        if not self.tiles[tile_id].disable:
+            self.click_tiles.append(tile_id)
+            cords = self.canvas.coords(tile)  # coordinates of tile
+            self.pic = self.tiles[tile_id].picture  # get the pic associate with tile
+            # print(cords)
+            image_id = self.canvas.create_image((cords[0] + cords[2]) / 2,
+                                                (cords[1] + cords[3]) / 2,
+                                                image=self.pic)
+            self.image_id.append(image_id)
+            self.num_clicks += 1
 
-    def disappear(self, tile):
+
+    def disappear(self, is_match):
         """
         Remove Sammy's image from the Canvas
         Call appear to have the image reappear after a delay
         :return: None
         """
-        self.num_clicks = 0
-        self.click_tiles.clear()
+        # this function called when len of click_tiles = 2
+        self.num_clicks = 0  # reset num clicks
         for image in self.image_id:
-            self.canvas.delete(self.image_id)
-        self.canvas.itemconfigure(tile, fill=self.color)
-
-
+            self.canvas.delete(image)
+        for tile in self.click_tiles:
+            print(tile)
+            color = self.default_color
+            disable = False
+            # if match, change color to player_color, disable the mouse
+            if is_match:
+                color = self.color
+                disable = True
+            self.canvas.itemconfigure(tile+1, fill=color)
+            self.tiles[tile].disable = disable
+        self.click_tiles.clear()
 
     def create_grid(self):
         index = 0
@@ -149,67 +153,46 @@ class MatchGame(object):
             for x_iter in range(self.NUM_GRIDS):
                 x, y = x_iter * self.SQUARE_SIZE, y_iter * self.SQUARE_SIZE
                 x_stop, y_stop = x + self.SQUARE_SIZE, y + self.SQUARE_SIZE
-                # self.canvas.create_rectangle(x, y, x_stop, y_stop,
-                #                              outline=self.color,
-                #                              fill=self.default_color)
                 cords = x, y, x_stop, y_stop
                 image_file = os.path.join(os.curdir, self.folder,
                                           self.new_list[index])
-                print(image_file)
-                tile = Tile(self.canvas, index, image_file, cords,
-                            self.color)
-                print(tile.cords)
-                image_pos = ((tile.cords[0] + tile.cords[2]) / 2,
-                             (tile.cords[1] + tile.cords[3]) / 2)
-                print(image_pos)
+                tile = Tile(self.canvas, index, image_file)
+                tile.draw_tile(self.color, self.default_color, cords)
+                # image_pos = ((x+x_stop) / 2, (y+y_stop) / 2)
+                # print(image_pos)
                 self.tiles.append(tile)
                 index += 1
-
 
     def select(self, event):
         """
         Tag the clicked tile as selected/unselected
-        :param tile:
+        :param event:
         :return: None
         """
-
         tile = self.canvas.find_withtag(tkinter.CURRENT)
-        self.canvas.itemconfigure(tile, tag="selected")
+        if "selected" in self.canvas.gettags(tile):
+            self.canvas.itemconfigure(tile, tag="unselected")
+        else:
+            self.canvas.itemconfigure(tile, tag="selected")
 
-
-#         if "selected" in self.canvas.gettags(tile):
-#             # print("unselected")
-#             self.canvas.itemconfigure(tile, tag="unselected")
-#         else:
-#             # print("selected")
-#             self.canvas.itemconfigure(tile, tag="selected")
 
 class Tile:
-    SQUARE_SIZE = 150
-    default_color = 'yellow'
 
-    def __init__(self, parent, tile_id, image_folder, cords, color):
+    def __init__(self, parent, tile_id, image_folder):
         # image_folder: ./sammy.gif
         self.parent = parent
         self.tile_id = tile_id
         self.folder = image_folder
         path, image_name = os.path.split(self.folder)
         self.image_name = image_name
-        self.flipped = False
-        self.color = color
-        self.cords = cords
-        self.visual = self.parent.create_rectangle(cords, outline=self.color,
-                                                   fill=self.default_color)
+        self.disable = False
+        # self.color = color
+        # self.cords = cords
         self.picture = tkinter.PhotoImage(file=self.folder)
 
-    def set_color(self, color):
-        self.color = color
-
-    def flip(self):
-        if not self.flipped:
-            self.flipped = True
-        else:
-            self.flipped = False
+    def draw_tile(self, line_color, background_color, cords):
+        self.parent.create_rectangle(cords, outline=line_color,
+                                     fill=background_color)
 
     def is_match(self, other):
         return self.image_name == other.image_name
