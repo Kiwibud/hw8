@@ -58,10 +58,8 @@ class MatchGame(object):
         self.new_list = get_image_list(folder) * 2
         random.shuffle(self.new_list)
         # Initialize self.sammy
-        self.pic1 = tkinter.PhotoImage(file=os.path.join(self.folder,
-                                                          self.new_list[0]))
-        self.pic2 = tkinter.PhotoImage(file=os.path.join(self.folder,
-                                                          self.new_list[1]))
+        self.pic = tkinter.PhotoImage(file=os.path.join(self.folder,
+                                                        self.new_list[0]))
         print(self.new_list)  # to check the 16 images in random order
         # Create the restart button widget
         restart_btn = tkinter.Button(parent, text='RESTART', width=20,
@@ -99,40 +97,51 @@ class MatchGame(object):
             self.canvas.itemconfigure(tile, fill=self.default_color)
         # random.shuffle(get_image_list(folder))
 
-        def play(self, event):
+    def play(self, event):
         """
         This method is invoked when the user clicks on a square.
         It implements the basic controls of the game.
         :param event: event (Event object) describing the click event
         :return: None
         """
-        self.click(event)
+        while len(self.click_tiles) < 2:
+            self.click(event)
         if len(self.click_tiles) == 2:
             for tile in self.click_tiles:
                 self.canvas.after(self.delay, self.disappear, tile)
-
-    def appear(self, tile):
-        tile_id = tile[0] - 1
-        # print(tile)  # tile id, eg (1,) when click the first square
-        # self.select(tile)  # to create the tag for tile
-        cords = self.canvas.coords(tile)  # coordinates of tile
-        print(os.path.join(self.folder, self.new_list[tile_id]))
-        # self.sammy = tkinter.PhotoImage(file=os.path.join(self.folder,
-        #                                                   self.new_list[
-        #                                                       tile_id]))
-        self.pic1 = self.tiles[tile_id].picture  # get the pic associate with tile
-        print(cords)
-        self.image_id = self.canvas.create_image((cords[0] + cords[2]) / 2,
-                                                 (cords[1] + cords[3]) / 2,
-                                                 image=self.pic1)
-        return tile
+        return "break"
 
     def click(self, event):
         tile = self.canvas.find_closest(event.x, event.y)
         self.appear(tile)
-        # tile_id = tile[0] - 1
         self.num_clicks += 1
         self.click_tiles.append(tile)
+
+    def appear(self, tile):
+        tile_id = tile[0] - 1
+        cords = self.canvas.coords(tile)  # coordinates of tile
+        print(os.path.join(self.folder, self.new_list[tile_id]))
+        self.pic = self.tiles[tile_id].picture  # get the pic associate with tile
+        print(cords)
+        image_id = self.canvas.create_image((cords[0] + cords[2]) / 2,
+                                                 (cords[1] + cords[3]) / 2,
+                                                 image=self.pic)
+        self.image_id.append(image_id)
+        return tile
+
+    def disappear(self, tile):
+        """
+        Remove Sammy's image from the Canvas
+        Call appear to have the image reappear after a delay
+        :return: None
+        """
+        self.num_clicks = 0
+        self.click_tiles.clear()
+        for image in self.image_id:
+            self.canvas.delete(self.image_id)
+        self.canvas.itemconfigure(tile, fill=self.color)
+
+
 
     def create_grid(self):
         index = 0
@@ -156,14 +165,6 @@ class MatchGame(object):
                 self.tiles.append(tile)
                 index += 1
 
-    def disappear(self, tile):
-        """
-        Remove Sammy's image from the Canvas
-        Call appear to have the image reappear after a delay
-        :return: None
-        """
-        self.canvas.delete(self.image_id)
-        self.canvas.itemconfigure(tile, fill=self.color)
 
     def select(self, event):
         """
@@ -279,4 +280,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
