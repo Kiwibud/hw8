@@ -99,17 +99,17 @@ class MatchGame(object):
             self.canvas.itemconfigure(tile, fill=self.default_color)
         # random.shuffle(get_image_list(folder))
 
-    def play(self, event):
+        def play(self, event):
         """
         This method is invoked when the user clicks on a square.
         It implements the basic controls of the game.
         :param event: event (Event object) describing the click event
         :return: None
         """
-        for tile in self.click_tiles:
-            self.appear(tile)
-        
-        self.canvas.after(self.delay, self.disappear, tile1)
+        self.click(event)
+        if len(self.click_tiles) == 2:
+            for tile in self.click_tiles:
+                self.canvas.after(self.delay, self.disappear, tile)
 
     def appear(self, tile):
         tile_id = tile[0] - 1
