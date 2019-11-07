@@ -56,15 +56,7 @@ class MatchGame(object):
         # self.tiles = []  # array of all the Tile objects
         self.click_tiles = []  # array of all the clicked tile_id
         # Initiate list of images
-        eight_pic = get_image_list(folder)
-        if len(eight_pic) > 8:
-            eight_pic = random.shuffle(get_image_list(folder))[:9]
-        self.new_list = eight_pic*2
-        random.shuffle(self.new_list)
-        # Initialize self.sammy
-        # self.pic = tkinter.PhotoImage(file=os.path.join(self.folder,
-        #                                               self.new_list[0]))
-        print(self.new_list)  # to check the 16 images in random order
+        self.new_list = self.shuffle_list()
         # Create the restart button widget
         restart_btn = tkinter.Button(parent, text='RESTART', width=20,
                                      command=self.restart)
@@ -80,7 +72,14 @@ class MatchGame(object):
         self.score_label = tkinter.Label(parent, text=f'Score: {self.score}',
                                          borderwidth=1)
         self.score_label.grid()
-        # Create any additional instance variable you need for the game
+
+    def shuffle_list(self):
+        eight_pic = get_image_list(self.folder)
+        if len(eight_pic) > 8:
+            random.shuffle(eight_pic)
+        full_list = eight_pic[:9]*2
+        random.shuffle(full_list)
+        return full_list
 
     def text_label(self):
         if len(self.canvas.find_withtag("match")) == 16:
@@ -253,3 +252,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
